@@ -10,7 +10,7 @@ from database.db import Base, engine
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Base.metadata.drop_all(bind=engine)
-    # Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
     category_router.init_all_category()
 
     print("[LOG] => INIT")
