@@ -1,4 +1,4 @@
-import { Search  } from "lucide-react";
+import { Search } from "lucide-react";
 import AddBar from "@/components/AddPage/AddBar";
 import { useLocation, useSearchParams } from "react-router-dom";
 import Clock from "./Clock";
@@ -16,7 +16,10 @@ export default function Header() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        (e.key === "k" || e.key === "K" || e.key === "л" || e.key === "Л")
+      ) {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
@@ -45,7 +48,11 @@ export default function Header() {
               ref={searchInputRef}
               type="text"
               className="w-full bg-[#f0f2f1] rounded-lg py-2 pl-10 pr-12 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
-              placeholder={isWarehousePage ? "Поиск по инвентарю (название, описание, ID, ...)" : "Поиск по заказам (ID, товары, ...)"}
+              placeholder={
+                isWarehousePage
+                  ? "Поиск по инвентарю (название, описание, ID, ...)"
+                  : "Поиск по заказам (ID, товары, ...)"
+              }
               value={searchParams.get("search") || ""}
               onChange={handleSearchChange}
             />
