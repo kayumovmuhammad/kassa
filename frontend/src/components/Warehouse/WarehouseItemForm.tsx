@@ -3,6 +3,7 @@ import useSettingsStore from "@/contexts/SettingsContext";
 import fetcher from "@/utils/fetcher";
 import { showToast } from "@/contexts/ToastContext";
 import useItemsStore from "@/contexts/ItemsContext";
+import { useAuthStore } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export interface WarehouseItemFormData {
@@ -22,7 +23,8 @@ interface WarehouseItemFormProps {
 export default function WarehouseItemForm({ initialData, mode }: WarehouseItemFormProps) {
   const navigate = useNavigate();
   const { currencySymbol } = useSettingsStore();
-  const { loadItems } = useItemsStore();
+  const { loadItems, addLocalItem, editLocalItem } = useItemsStore();
+  const { mode: authMode } = useAuthStore();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -64,6 +66,26 @@ export default function WarehouseItemForm({ initialData, mode }: WarehouseItemFo
     };
 
     try {
+      if (authMode === "fiction") {
+        const localItem = {
+           id: payload.id || Math.floor(Math.random() * 10000) + 1000,
+           name: payload.name,
+           description: payload.description,
+           amount: payload.amount,
+           original_price: payload.original_price,
+           category_id: 0
+        };
+        if (mode === "add") {
+            addLocalItem(localItem as any);
+            showToast("Товар (фейк) успешно добавлен", "success");
+        } else {
+            editLocalItem(localItem as any);
+            showToast("Товар (фейк) успешно обновлен", "success");
+        }
+        navigate("/warehouse");
+        return;
+      }
+
       if (mode === "add") {
         await fetcher({
           url: `${import.meta.env.VITE_API_URL}/item`,
@@ -72,7 +94,6 @@ export default function WarehouseItemForm({ initialData, mode }: WarehouseItemFo
         });
         showToast("Товар успешно добавлен", "success");
       } else {
-        console.log(payload);
         await fetcher({
           url: `${import.meta.env.VITE_API_URL}/item`,
           method: "PATCH",

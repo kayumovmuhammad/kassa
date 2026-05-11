@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type { Item, AddableItem } from "@/types/Item";
 import type { Sell } from "@/types/Sell";
 import fetcher from "@/utils/fetcher";
+import { useAuthStore } from "./AuthContext";
 
 interface ItemsState {
   items: Item[];
@@ -12,6 +13,8 @@ interface ItemsState {
   deleteItemByIndex: (index: number) => void;
   editCurrentItem: (index: number, newItem: AddableItem) => void;
   loadItems: () => void;
+  addLocalItem: (item: Item) => void;
+  editLocalItem: (item: Item) => void;
   clearCurrentItems: () => void;
   currentTaxPercent: number;
   currentIncludeTax: boolean;
@@ -88,6 +91,24 @@ const useItemsStore = create<ItemsState>()(
         })
       },
       loadItems: async () => {
+        const authMode = useAuthStore.getState().mode;
+        if (authMode === "fiction") {
+            const fakeItems: Item[] = [
+                { id: 101, name: "Мышка Logitech M34", description: "Беспроводная мышь", amount: 45, original_price: 1200, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 102, name: "Клавиатура Razer BlackWidow", description: "Механическая клавиатура", amount: 12, original_price: 8500, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 103, name: "Монитор LG 27UL500", description: "4K Монитор 27 дюймов", amount: 5, original_price: 24000, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 104, name: "Кабель HDMI 2.0 (2м)", description: "Высокоскоростной HDMI кабель", amount: 120, original_price: 450, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 105, name: "Наушники Sony WH-1000XM4", description: "Беспроводные наушники с шумоподавлением", amount: 8, original_price: 29990, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 106, name: "SSD накопитель Samsung 980 1TB", description: "NVMe M.2 SSD", amount: 24, original_price: 8900, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 107, name: "USB Флешка Kingston 64GB", description: "USB 3.2 Gen 1", amount: 85, original_price: 750, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 108, name: "Коврик для мыши SteelSeries QcK", description: "Игровой коврик, размер M", amount: 30, original_price: 1100, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 109, name: "Блок питания Corsair RM850x", description: "850W, 80 Plus Gold", amount: 7, original_price: 12500, category_id: 0, image_urls: [], image_preview_urls: [] },
+                { id: 110, name: "Сетевой фильтр APC 5 розеток", description: "Защита от перенапряжения, 1.8м", amount: 50, original_price: 1800, category_id: 0, image_urls: [], image_preview_urls: [] },
+            ];
+            set({ items: fakeItems });
+            return;
+        }
+
         try {
           const data = await fetcher({
             url: `${import.meta.env.VITE_API_URL}/item/all`,
@@ -98,6 +119,10 @@ const useItemsStore = create<ItemsState>()(
           console.error(error);
         }
       },
+      addLocalItem: (item: Item) => set((state) => ({ items: [item, ...state.items] })),
+      editLocalItem: (item: Item) => set((state) => ({ 
+          items: state.items.map(i => i.id === item.id ? item : i) 
+      })),
       clearCurrentItems: () => {
         set({ currentItems: [], currentIncludeTax: false, currentTaxPercent: 6 });
       },

@@ -13,6 +13,7 @@ import useItemsStore from "./contexts/ItemsContext";
 import { useEffect } from "react";
 import useSellsStore from "./contexts/SellsContext";
 import StatsPage from "./pages/StatsPage";
+import ProtectedRoute from "./components/Layout/ProtectedRoute";
 
 function App() {
   const { loadItems } = useItemsStore();
@@ -29,16 +30,20 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<AddCheckPage />} />
-          <Route path="warehouse">
-            <Route index element={<WarehousePage />} />
-            <Route path="add" element={<AddWarehouseItemPage />} />
-            <Route path="edit/:id" element={<EditWarehouseItemPage />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route path="warehouse">
+              <Route index element={<WarehousePage />} />
+              <Route path="add" element={<AddWarehouseItemPage />} />
+              <Route path="edit/:id" element={<EditWarehouseItemPage />} />
+            </Route>
+            <Route path="orders">
+              <Route index element={<OrdersPage />} />
+              <Route path="edit/:id" element={<EditCheckPage />} />
+            </Route>
+            <Route path="stats" element={<StatsPage />} />
           </Route>
-          <Route path="orders">
-            <Route index element={<OrdersPage />} />
-            <Route path="edit/:id" element={<EditCheckPage />} />
-          </Route>
-          <Route path="stats" element={<StatsPage />} />
+
           <Route path="settings" element={<SettingsPage />} />
           <Route path="help" element={<HelpPage />} />
         </Route>
