@@ -3,7 +3,7 @@ import { Search, Plus } from "lucide-react";
 import useItemsStore from "@/contexts/ItemsContext";
 import type { Item } from "@/types/Item";
 
-const AddBar = forwardRef<HTMLInputElement>((props, forwardedRef) => {
+const AddBar = forwardRef<HTMLInputElement, any>((_, forwardedRef) => {
   const { items, addItem, addItembyName } = useItemsStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
